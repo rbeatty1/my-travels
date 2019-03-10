@@ -1,0 +1,219 @@
+body{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 16px;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#app{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background: #8BBEB2;
+}
+
+#map{
+    width: 100%;
+    height: 90%
+}
+
+header{
+    width: 100%;
+    height: 10%;
+    background: #18314F;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header a{
+    text-transform: uppercase;
+    position: relative;
+    left: 5%;
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: white;
+}
+header a:visited{
+    color: white
+    
+}
+header a:hover{
+    color: #E6F9AF
+    
+}
+
+header form{
+    position: relative;
+    right: 5%;
+    width: 20%;
+}
+
+header form select{
+    width: auto;
+    color: white;
+    background: transparent;
+    padding: 2% 1%;
+    font-size: 1.25rem;
+    border: none;
+    border-bottom: 2px dashed #8BBEB2;
+    border-radius: 2px;
+}
+
+#modal-links{
+    width: 33%;
+    display: flex;
+    justify-content: space-evenly;
+    margin: auto;
+}
+
+.modal-link{
+    font-size: 1rem;
+}
+
+.modal{
+    position: fixed;
+    top: 15%;
+    display: none;
+    width: 33%;
+    height: 20vh;
+    background: rgba(255,255,255,.95);
+    z-index: 5;
+    padding: 1%;
+    border-radius: 10px;
+    box-shadow: 3px 3px 2px rgba(24, 49, 79, .3)
+}
+
+.modal.active{
+    display: block;
+}
+#close-modal{
+    position: absolute;
+    right: 2%;
+    top: 1%;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#close-modal:hover{
+    color: #333;
+    cursor: pointer;
+}
+.legend-list{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-flow: column wrap;
+    height: 100%;
+    margin: auto;
+    color: #18314F;
+}
+
+.legend-row{
+    display: flex;
+    align-items: center;
+}
+
+.legend-row span{
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+}
+
+.legend-row p{
+    margin-left: 5px
+    margin: 1%
+}
+
+
+section{
+    height: 50%;
+    margin:  10% auto 0;
+}
+
+button{
+    padding: 6px;
+    border: none;
+    border-bottom: 2px dotted red;
+    background: transparent;
+    color: #18314F;
+    font-size: 2rem;
+    font-weight: 700;
+}
+button:hover,#list li:hover{
+    cursor: pointer;
+}
+
+#list{
+    list-style: none;
+    display: none;
+    margin-left: 2%;
+    color: white;
+    font-weight: 400;
+}
+
+#list.active{
+    display: block;
+}
+
+#list li{
+    margin: 1% 0;
+    display: flex;
+    justify-content: space-between;
+    width: 100%
+}
+
+#list li:hover{
+    color: #E6F9AF
+}
+.icon-container{
+    width: 25%;
+    height: 1rem;
+    display: flex;
+}
+
+.trip-icon{
+    height: .8rem;
+    width: .8rem;
+    border-radius: 50%;
+    margin: 0 5%;
+}
+
+.trip-icon.holiday{
+    background: red;
+}
+.trip-icon.vacation{
+    background: blue;
+}
+
+.trip-icon.concert{
+    background: yellow;
+}
+
+.trip-icon.race{
+    background: green;
+}
+.trip-icon.professional{
+    background: white;
+}
+
+.travels-popup .mapboxgl-popup-content{
+    padding: 5px 10px;
+}
+
+.mapboxgl-popup-content p{
+    margin: 1% 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1rem;
+    color: #aaa;
+}
+
+.mapboxgl-popup-content p.address{
+    font-size: .75rem;
+    text-align: center;
+    color: #ccc;
+}

@@ -1,5 +1,6 @@
 import '../home.css'
 import TripMap from './tripMap';
+import * as aria from '../utils/aria.js'
 
 /*
     BuildHomePage()
@@ -50,7 +51,10 @@ const BuildHomePage = ()=>{
     let button = document.getElementById('accordion-control')
     button.onclick = e =>{
         let content = e.target.nextElementSibling
-        if (content)content.classList.toggle('active')
+        if (content){
+            if (content.classList.contains('active')) aria.AriaHide(content)
+            else aria.AriaShow(content)
+        } 
     }
 }
 

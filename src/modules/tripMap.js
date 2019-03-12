@@ -1,6 +1,7 @@
 import mapboxgl from "../../node_modules/mapbox-gl"
 import "../../node_modules/mapbox-gl/dist/mapbox-gl.css"
 import Home from "./home";
+import * as aria from '../utils/aria.js'
 
 
 /*
@@ -201,19 +202,15 @@ const BuildNav = component =>{
 
         // bob the builder
         let form = document.createElement('form'),
-            select = document.createElement('select'),
-            defaultOption = document.createElement('option')
+            select = document.createElement('select')
         
         // housekeeping
         select.name = 'Locations'
         select.innerText = select.name
 
-        defaultOption.innerText = 'Locations'
         let all = document.createElement('option')
         all.value = 0
         all.innerText = 'All Locations'
-        
-        select.appendChild(defaultOption)
         select.appendChild(all)
 
         // grab all trip data from api
@@ -225,6 +222,7 @@ const BuildNav = component =>{
                 let option = document.createElement('option')
                 option.value = trips[location].id
                 option.innerText = location
+                if (option.value == component.trip) option.selected = true
                 select.appendChild(option)
             }
         })
@@ -275,7 +273,8 @@ const BuildNav = component =>{
         // actually build the links w/ actions
         links.map(link=>{
             let a = document.createElement('a'),
-                modal = document.createElement('div')
+                modal = document.createElement('div'),
+                close = document.createElement('span')
 
             a.innerText = link
             a.href = `#${link.toLowerCase()}-modal`
@@ -284,9 +283,20 @@ const BuildNav = component =>{
 
             modal.id = `${link.toLowerCase()}-modal`
             modal.classList.add('modal')
+    
+            close.onclick = e=>{
+                let modal = e.target.parentNode
+                aria.AriaHide(modal)
+            }
+            close.innerHTML = '&times;'
+            close.classList = 'close-modal'
+            modal.appendChild(close)
 
             a.onclick = e=>{
-                modal.classList.toggle('active')
+                let modals = document.querySelectorAll('.modal')
+                for (let m of modals) if (m.classList.contains('active')) aria.AriaHide(m)
+                if (!modal.classList.contains('active')) aria.AriaShow(modal)
+                else aria.AriaHide(modal)
             }
 
             container.appendChild(a)
@@ -329,47 +339,40 @@ const BuildLegend = map =>{
     // wait for map to finish loading
     map.on('idle', e=>{
         if (!map.loaded) return
+        let legend = document.getElementById('legend-modal')
 
-        // housekeeping
-        let legend = document.getElementById('legend-modal'),
-            colors = map.getPaintProperty('travel-locations', 'circle-color'),
-            close = document.createElement('span'),
-            legendItems = document.createElement('ul')
+        if (!legend.querySelector('ul')){
+            // housekeeping,
+                let colors = map.getPaintProperty('travel-locations', 'circle-color'),
+                    legendItems = document.createElement('ul')
+            
+            // build the legend items
+            colors.map((color, index)=>{
+                // make sure it's not the default, and is actually a color
+                if (color[0] === '#' && color != '#ffffff'){
+                    let row = document.createElement('li'),
+                        icon = document.createElement('span'),
+                        label = document.createElement('p')
+    
+                    row.classList.add('legend-row')
+    
+                    icon.classList.add('legend-icon')
+                    icon.style.backgroundColor = color
+    
+                    // grab the previous item from paint array because that's the label
+                    label.innerText = colors[index-1]
+    
+                    row.appendChild(icon)
+                    row.appendChild(label)
+    
+                    legendItems.appendChild(row)
+                }
+            })
+    
+            legendItems.classList.add('legend-list')
+            legend.appendChild(legendItems)
 
-        //make sure the modal is empty
-        while(legend.firstChild) legend.removeChild(legend.firstChild)
-
-        // close button
-            // TODO: Aria this shit and make an actual click event for the close button/clicking outside of the modal
-        close.innerHTML = '&times;'
-        close.id = 'close-modal'
-        legend.appendChild(close)
-        
-        // build the legend items
-        colors.map((color, index)=>{
-            // make sure it's not the default, and is actually a color
-            if (color[0] === '#' && color != '#ffffff'){
-                let row = document.createElement('li'),
-                    icon = document.createElement('span'),
-                    label = document.createElement('p')
-
-                row.classList.add('legend-row')
-
-                icon.classList.add('legend-icon')
-                icon.style.backgroundColor = color
-
-                // grab the previous item from paint array because that's the label
-                label.innerText = colors[index-1]
-
-                row.appendChild(icon)
-                row.appendChild(label)
-
-                legendItems.appendChild(row)
-            }
-        })
-
-        legendItems.classList.add('legend-list')
-        legend.appendChild(legendItems)
+        }
     })
 }
 

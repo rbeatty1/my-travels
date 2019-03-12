@@ -89,7 +89,7 @@ header form select{
 .modal.active{
     display: block;
 }
-#close-modal{
+.close-modal{
     position: absolute;
     right: 2%;
     top: 1%;
@@ -99,7 +99,7 @@ header form select{
     font-weight: bold;
 }
 
-#close-modal:hover{
+.close-modal:hover{
     color: #333;
     cursor: pointer;
 }

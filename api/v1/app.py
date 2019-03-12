@@ -54,7 +54,7 @@ def query_places():
     params = {
         'name': '{}'.format(args.get('name')),
         'type': '{}'.format(args.get('type')),
-        'trip_id': int(args.get('trip_id')),
+        'trip_id': '{}'.format(args.get('trip_id')),
         'city': '{}'.format(args.get('city')),
         'state': '{}'.format(args.get('state'))
     }

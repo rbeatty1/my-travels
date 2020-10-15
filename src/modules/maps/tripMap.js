@@ -1,7 +1,10 @@
-import mapboxgl from "../../node_modules/mapbox-gl"
-import "../../node_modules/mapbox-gl/dist/mapbox-gl.css"
-import Home from "./home";
-import * as aria from '../utils/aria.js'
+import mapboxgl from "mapbox-gl";
+import "../../../node_modules/mapbox-gl/dist/mapbox-gl.css";
+import Home from "../home/home";
+import * as aria from '../../utils/aria.js';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import * as i from '@primer/octicons';
 
 
 /*
@@ -23,7 +26,7 @@ const ChangeExtent = (map, features, check) =>{
     })
 
     // move map to center on rendered features, plus a little extra
-    map.fitBounds(bounds, { padding: 200 })
+    map.fitBounds(bounds, { padding: 200 , linear: false})
 }
 
 /*
@@ -81,8 +84,10 @@ const BuildMap = component =>{
     }
 
     // add map container to page
-    component.container.id = 'map'
-    component.app.appendChild(component.container)
+    while(document.getElementById("map")) component.container.removeChild(document.getElementById("map"));
+    let mapEl = document.createElement("div");
+    mapEl.id = 'map'
+    component.container.appendChild(mapEl);
 
     mapboxgl.accessToken = 'pk.eyJ1IjoiYmJlYXR6MSIsImEiOiJjanQxb2dnMmgwb29vNGFwZG4xdXRxd25nIn0.CiPPL5rxchYwsCN0nTHfCQ'
 
@@ -91,7 +96,7 @@ const BuildMap = component =>{
         center: [-91.698, 41.032],
         zoom: 3,
         style: 'mapbox://styles/mapbox/streets-v9',
-        container: component.container
+        container: mapEl
     })
 
     map.on('load', ()=>{
@@ -182,6 +187,7 @@ const BuildMap = component =>{
     map.on('click', 'travel-locations', e=>{ GeneratePopup(e, map) })
 
     component.map = map
+    component.app.appendChild(component.container)
 }
 
 /*
@@ -193,12 +199,12 @@ const BuildMap = component =>{
 
 const BuildNav = component =>{
     /*
-        BuildDropdown(container)
+        BuildLocationDropdown(container)
         @purpose: Builds dropdown form to quickly jump from trip to trip
         @params:
             container: header container that the form will be appended to
     */
-    const BuildDropdown = container =>{
+    const BuildLocationDropdown = container =>{
 
         // bob the builder
         let form = document.createElement('form'),
@@ -255,65 +261,15 @@ const BuildNav = component =>{
         container.appendChild(form)
     }
 
-    /*
-        ModalLinks(header)
-        @purpose: build the header links to open the modals
-        @params:
-            header: header element
-    */
-
-    const ModalLinks = header =>{
-        // define the different modals
-        let links = ['Legend', 'Stats'],
-            container = document.createElement('div')
-
-        container.id = 'modal-links'
-
-
-        // actually build the links w/ actions
-        links.map(link=>{
-            let a = document.createElement('a'),
-                modal = document.createElement('div'),
-                close = document.createElement('span')
-
-            a.innerText = link
-            a.href = `#${link.toLowerCase()}-modal`
-            a.rel = 'noopener'
-            a.classList.add('modal-link')
-
-            modal.id = `${link.toLowerCase()}-modal`
-            modal.classList.add('modal')
-    
-            close.onclick = e=>{
-                let modal = e.target.parentNode
-                aria.AriaHide(modal)
-            }
-            close.innerHTML = '&times;'
-            close.classList = 'close-modal'
-            modal.appendChild(close)
-
-            a.onclick = e=>{
-                let modals = document.querySelectorAll('.modal')
-                for (let m of modals) if (m.classList.contains('active')) aria.AriaHide(m)
-                if (!modal.classList.contains('active')) aria.AriaShow(modal)
-                else aria.AriaHide(modal)
-            }
-
-            container.appendChild(a)
-            container.appendChild(modal)
-        })
-
-        header.appendChild(container)
-
-    }
+    let toggleLegendFn = component.toggleLegend;
+    component = component.state;
 
     // build home link
-    let nav = document.createElement('header'),
-        home = document.createElement('a')
+    let nav = document.createElement('aside'),
+        home = document.createElement('span'),
+        collapse = document.createElement('span');
 
-    home.href = '#'
-    home.rel = 'noopener'
-    home.innerText = 'home'
+    home.insertAdjacentHTML("afterbegin", i.home.toSVG( { width : 33, height : 33 } ));
     home.onclick = e=>{
         let body = document.querySelector('body'),
             app = document.createElement('main')
@@ -323,11 +279,18 @@ const BuildNav = component =>{
         body.appendChild(app)
         new Home()
     }
+    home.classList.add("icon")
+    collapse.classList.add("icon", "collapse")
+
+    collapse.insertAdjacentHTML("afterbegin", i[component.showLegend ? "chevron-left" : "chevron-right"].toSVG( { width : 33, height : 33 } ))
+
+    collapse.addEventListener("click", toggleLegendFn);
 
     nav.appendChild(home)
-    ModalLinks(nav)
-    BuildDropdown(nav)
-    component.app.appendChild(nav)
+    component.showLegend && BuildLocationDropdown(nav);
+    nav.appendChild(collapse)
+
+    component.container.insertAdjacentElement("afterbegin", nav)
 }
 
 
@@ -335,46 +298,53 @@ const BuildNav = component =>{
     BuildLegend(map)
     @purpose: build the map legend based on the travel-locations paint property
 */
-const BuildLegend = map =>{
+
+const BuildLegend = component =>{
     // wait for map to finish loading
-    map.on('idle', e=>{
-        if (!map.loaded) return
-        let legend = document.getElementById('legend-modal')
+    component.map && component.map.on('idle', e=>{
+        if (document.querySelector(".legend-list")) document.querySelector("aside").removeChild(document.querySelector(".legend-list"));  
+        let map = component.map;
+        if (!component.map.loaded) return
+        let colors = map.getPaintProperty('travel-locations', 'circle-color'),
+            legendItems = document.createElement('ul')
 
-        if (!legend.querySelector('ul')){
-            // housekeeping,
-                let colors = map.getPaintProperty('travel-locations', 'circle-color'),
-                    legendItems = document.createElement('ul')
-            
-            // build the legend items
-            colors.map((color, index)=>{
-                // make sure it's not the default, and is actually a color
-                if (color[0] === '#' && color != '#ffffff'){
-                    let row = document.createElement('li'),
-                        icon = document.createElement('span'),
-                        label = document.createElement('p')
-    
-                    row.classList.add('legend-row')
-    
-                    icon.classList.add('legend-icon')
-                    icon.style.backgroundColor = color
-    
-                    // grab the previous item from paint array because that's the label
-                    label.innerText = colors[index-1]
-    
-                    row.appendChild(icon)
-                    row.appendChild(label)
-    
-                    legendItems.appendChild(row)
-                }
-            })
-    
-            legendItems.classList.add('legend-list')
-            legend.appendChild(legendItems)
+        let bbox = map.getBounds();
+        let featureTypes = map.queryRenderedFeatures(bbox).filter( x=> x.layer.id == "travel-locations").map( x=> x.properties.type);
+        
+        
+        // build the legend items
+        colors.map((color, index)=>{
+            if( index < 2 || featureTypes.indexOf(colors[index-1]) == -1) return;
+            // make sure it's not the default, and is actually a color
+            if (color[0] === '#' && color != '#ffffff'){
+                let row = document.createElement('li'),
+                    icon = document.createElement('span'),
+                    label = document.createElement('p')
 
-        }
+                row.classList.add('legend-row')
+
+                icon.classList.add('legend-icon')
+                icon.style.backgroundColor = color
+
+                // grab the previous item from paint array because that's the label
+                label.innerText = colors[index-1]
+
+                row.appendChild(icon)
+                row.appendChild(label)
+
+                legendItems.appendChild(row)
+            }
+        })
+
+        legendItems.classList.add('legend-list')
+
+        component.showLegend && component.container.querySelector("aside form").insertAdjacentElement("afterend", legendItems);
+
     })
+
 }
+
+
 
 
 export default class TripMap{
@@ -382,15 +352,28 @@ export default class TripMap{
         this.state = {
             trip : props,
             container: document.createElement('main'),
-            app: document.querySelector('body')
+            app: document.querySelector('body'),
+            showLegend : true
         }
 
+        this.render = this.render.bind(this);
+        this.toggleLegend = this.toggleLegend.bind(this);
         this.render()
     }
     render(){
         while (this.state.app.firstChild){ this.state.app.removeChild(this.state.app.firstChild)}
-        BuildNav(this.state)
+        BuildNav(this)
         BuildMap(this.state)
-        BuildLegend(this.state.map)
+        this.state.showLegend && BuildLegend(this.state);
+    }
+
+    toggleLegend(){
+        while(this.state.container.querySelector("aside")) this.state.container.removeChild(this.state.container.querySelector("aside"));
+        this.state.showLegend = !this.state.showLegend;
+        BuildNav(this);
+        document.getElementById("map").classList.toggle("show-legend", this.state.showLegend);
+        this.state.map.resize();
+        this.state.showLegend && BuildLegend(this.state);
+
     }
 }

@@ -1,4 +1,4 @@
-import Home from './modules/home.js'
+import Home from './modules/home/home.js';
 
 let app = document.getElementById('app')
 

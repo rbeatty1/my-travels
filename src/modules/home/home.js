@@ -1,6 +1,6 @@
-import '../home.css'
-import TripMap from './tripMap';
-import * as aria from '../utils/aria.js'
+import './home.css'
+import TripMap from '../maps/tripMap';
+import * as aria from '../../utils/aria.js'
 
 /*
     BuildHomePage()
@@ -32,6 +32,7 @@ const BuildHomePage = ()=>{
                 let circle = document.createElement('span')
                 circle.classList = `trip-icon ${tripType.toLowerCase()}`
                 circle.setAttribute('data-type', tripType.toLowerCase())
+                circle.setAttribute('title', tripType)
                 tripIcons.appendChild(circle)
             })
 
@@ -46,16 +47,6 @@ const BuildHomePage = ()=>{
             listContainer.appendChild(listItem)
         }
     })
-
-    // build header button
-    let button = document.getElementById('accordion-control')
-    button.onclick = e =>{
-        let content = e.target.nextElementSibling
-        if (content){
-            if (content.classList.contains('active')) aria.AriaHide(content)
-            else aria.AriaShow(content)
-        } 
-    }
 }
 
 
@@ -63,15 +54,12 @@ export default class Home{
     constructor(){
         let app = document.getElementById('app'),
             section = document.createElement('section'),
-            button = document.createElement('button'),
+            header = document.createElement('h1'),
             list = document.createElement('ul')
 
-        button.id = 'accordion-control'
-        button.setAttribute('aria-controls', 'list')
-        button.setAttribute('aria-expanded', 'false')
-        button.innerText = 'Where do you want to go?'
+        header.innerText = 'Where do you want to go?'
 
-        section.appendChild(button)
+        section.appendChild(header)
 
         list.id = 'list'
 

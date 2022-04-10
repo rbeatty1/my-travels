@@ -1,0 +1,8 @@
+<div class="row justify-content-center">
+  <h1 class="text-center">Trips Index</h1>
+  <ul class="list-group col-sm-3">
+    <% @trips.each do |t|%>
+      <li class="list-group-item"><%= t.name %></li>
+    <% end %>
+  </ul>
+</div>

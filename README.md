@@ -1,26 +1,24 @@
-# my-travels
+# README
 
-### Front-end Documentation
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-This is a small application built to visualize and track where I've gone on vacations/traveling through the past few years and into the future.
+Things you may want to cover:
 
-**Build Process** _webpack_
+* Ruby version
 
-**Framework** _none_
+* System dependencies
 
-**Front-end** _mapbox-gl_
+* Configuration
 
-**Back-end** _Python + Flask + PostgreSQL_
+* Database creation
 
+* Database initialization
 
-### Get Started
+* How to run the test suite
 
-`cd <project directory>`
+* Services (job queues, cache servers, search engines, etc.)
 
-`git clone https://www.github.com/rbeatty1/my-travels.git`
+* Deployment instructions
 
-`npm install`
-
-`npm start`
-
-**_Look in `./api/v1` for back end information_**
+* ...

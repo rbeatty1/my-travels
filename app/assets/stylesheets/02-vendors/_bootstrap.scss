@@ -1,0 +1,11 @@
+$theme-colors: (
+  primary: $independence-500,
+  secondary: $champagne-500,
+  success: $sheen-500,
+  danger: $terraCotta-500,
+  light: $eggshell-500,
+)
+
+;@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons';
+@import "bootstrap/scss/variables";

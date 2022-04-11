@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   get '/' => "trips#index"
+  get '/client_library' => 'client_library#show' if Rails.env.development?
 end

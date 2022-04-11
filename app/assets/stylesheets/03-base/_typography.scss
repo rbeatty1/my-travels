@@ -1,0 +1,87 @@
+.text-independence-700 {
+  color: $independence-700
+}
+.text-independence-500 {
+  color: $independence-500
+}
+.text-independence-300 {
+  color: $independence-300
+}
+
+.text-champagne-700 {
+  color: $champagne-700
+}
+.text-champagne-500 {
+  color: $champagne-500
+}
+.text-champagne-300 {
+  color: $champagne-300
+}
+
+.text-sheen-700 {
+  color: $sheen-700
+}
+.text-sheen-500 {
+  color: $sheen-500
+}
+.text-sheen-300 {
+  color: $sheen-300
+}
+
+.text-terraCotta-700 {
+  color: $terraCotta-700
+}
+.text-terraCotta-500 {
+  color: $terraCotta-500
+}
+.text-terraCotta-300 {
+  color: $terraCotta-300
+}
+
+.text-eggshell-700 {
+  color: $eggshell-700
+}
+.text-eggshell-500 {
+  color: $eggshell-500
+}
+.text-eggshell-300 {
+  color: $eggshell-300
+}
+
+
+h1 {
+  color: $independence-700;
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+
+h2 {
+  color: $independence-500;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+h3 {
+  color: $independence-300;
+  font-weight: 300;
+  font-size: 1.25rem;
+}
+
+p {
+  color: $independence-500;
+  
+  &.emphasize {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: $independence-700;
+  }
+
+  &.secondary {
+    color: $independence-300;
+    font-size: 0.9rem;
+  }
+
+  &.sm {
+    font-size: 0.8rem;
+  }
+}
